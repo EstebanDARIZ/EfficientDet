@@ -4,3 +4,8 @@ __pycache__
 tmp
 .ropeproject
 .pyc
+.venv
+efficientdet-d0
+.python-version
+efficientdet/output
+
