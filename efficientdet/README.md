@@ -14,6 +14,25 @@ To run on 1 image :
 to run on a video :
 
 
+    # step 1: export saved model.
+    python model_inspect.py --runmode=saved_model \
+    --model_name=efficientdet-d0 --ckpt_path=efficientdet-d0 \
+    --saved_model_dir=/tmp/savedmodel 
+    
+    # step 2: to save the detection video
+    python model_inspect.py \
+    --runmode=saved_model_video \
+    --model_name=efficientdet-d0   \
+    --saved_model_dir=efficientdet-d0 \
+    --input_video=/home/esteban-dreau-darizcuren/doctorat/dataset/raw/Raie.MP4  \
+    --output_video=output.mov
+
+    # step 2 bis: to visualise the detection in real time 
+    python model_inspect.py \
+    --runmode=saved_model_video \
+    --model_name=efficientdet-d0 \
+    --saved_model_dir=/tmp/savedmodel \
+    --input_video=/home/esteban-dreau-darizcuren/doctorat/dataset/Raie_event.MP4
 
 
 
