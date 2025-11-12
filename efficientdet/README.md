@@ -2,15 +2,16 @@
 ## Tuto 
 
 To run on 1 image : 
-'''
-python model_inspect.py \
-  --runmode=infer \
-  --model_name=efficientdet-d0 \
-  --ckpt_path=efficientdet-d0 \
-  --input_image=/home/esteban-dreau-darizcuren/doctorat/dataset/img_raw_rgb/Raie_1/4_rgb.png \
-  --output_image_dir=output/
 
-'''
+    python model_inspect.py \
+    --runmode=infer \
+    --model_name=efficientdet-d0 \
+    --ckpt_path=efficientdet-d0 \
+    --input_image=/home/esteban-dreau-darizcuren/doctorat/dataset/img_raw_rgb/Raie_1/4_rgb.png \
+    --output_image_dir=output/
+
+
+to run on a video :
 
 
 
