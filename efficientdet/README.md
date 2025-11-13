@@ -7,9 +7,18 @@ To run on 1 image :
     --runmode=infer \
     --model_name=efficientdet-d0 \
     --ckpt_path=efficientdet-d0 \
-    --input_image=/home/esteban-dreau-darizcuren/doctorat/dataset/img_raw_rgb/Raie_1/4_rgb.png \
+    --input_image=/home/esteban-dreau-darizcuren/doctorat/dataset/img_raw \
     --output_image_dir=output/
+    
 
+To run on a folder :
+
+    python model_inspect.py   \
+    --runmode=infer \
+    --model_name=efficientdet-d0   \
+    --ckpt_path=efficientdet-d0    \
+    --input_image=/home/esteban-dreau-darizcuren/doctorat/dataset/img_enhanced/UCD/*.jpg   \
+    --output_image_dir=output/
 
 to run on a video :
 
