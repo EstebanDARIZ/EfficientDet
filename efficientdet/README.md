@@ -1,4 +1,105 @@
 # EfficientDet
+
+## Added
+### Added
+
+This repository now includes several utility scripts to prepare data and run batch inference. Short descriptions and usage examples are provided below.
+
+- inference_batch
+  - Purpose: Run inference over a directory of images or videos using an exported SavedModel or checkpoint. Produces annotated images or a video.
+  - Usage:
+    - With SavedModel directory:
+      ```
+      ./inference_batch --saved_model_dir=/path/to/savedmodel \
+                        --input=/path/to/images_or_pattern \
+                        --output_dir=/path/to/output \
+                        --model_name=efficientdet-d0 \
+                        --min_score=0.4 \
+                        --max_boxes=100
+      ```
+    - With checkpoint (will export SavedModel first if needed):
+      ```
+      ./inference_batch --ckpt_path=/path/to/checkpoint \
+                        --input=/data/images/*.jpg \
+                        --output_dir=out/ \
+                        --model_name=efficientdet-d0
+      ```
+  - Notes:
+    - Supports glob patterns and single files.
+    - If input is a video and --output_video is set, saves annotated video.
+    - Use --batch_size to run batched inference where applicable.
+
+- split_dataset
+  - Purpose: Split a dataset of images (and optional annotation files) into train/val/test subfolders.
+  - Usage:
+    ```
+    ./split_dataset --src_dir=/path/to/images \
+                    --dest_dir=/path/to/split_dataset \
+                    --train_ratio=0.8 --val_ratio=0.1 --test_ratio=0.1 \
+                    --copy  # or --move
+    ```
+  - Options:
+    - --seed N : deterministic split.
+    - --ext jpg,png : only include specified file extensions.
+    - --preserve_annotations : move/copy matching annotation files (by basename).
+
+- create_custom_tfrecoreds.py
+  - Purpose: Convert a folder of images + annotation JSON/CSV into TFRecord shards for training/eval.
+  - Usage:
+    ```
+    python create_custom_tfrecoreds.py \
+      --image_dir /data/split/train \
+      --ann_file /data/annotations/train_annotations.json \
+      --output_prefix tfrecord/train \
+      --num_shards 32 \
+      --label_map label_map.yaml
+    ```
+  - Notes:
+    - Accepts COCO-style JSON or a CSV with columns: filename,xmin,ymin,xmax,ymax,class_id.
+    - label_map can be a simple YAML/JSON mapping {1:person,2:car,...}.
+    - Produces one or more .tfrecord files and a generated .record_index (optional).
+
+- clean_filename
+  - Purpose: Sanitize filenames in-place to remove problematic characters and normalize extensions.
+  - Usage:
+    ```
+    ./clean_filename --dir /data/images --dry_run
+    ./clean_filename --dir /data/images --replace_spaces _ --lowercase
+    ```
+  - Options:
+    - --dry_run : show changes without renaming.
+    - --replace_spaces <char> : replacement for spaces.
+    - --lowercase : convert names to lowercase.
+    - --keep_unicode : keep non-ascii characters (off by default).
+
+- remove_error
+  - Purpose: Identify and remove corrupted images or files causing decoding/IO errors.
+  - Usage:
+    ```
+    ./remove_error --dir /data/images --ext jpg,png --move_to /tmp/bad_files --threads 8
+    ```
+  - Behavior:
+    - Attempts to open/verify each image using PIL/OpenCV.
+    - On failure, moves or deletes the file according to flags.
+  - Options:
+    - --move_to <dir> : move bad files instead of deleting.
+    - --report <file> : write a CSV report with paths and error messages.
+
+Common notes
+- All scripts are lightweight Python/bash utilities included at the repository root. They require Python 3.6+ and the following optional packages for certain tasks:
+  - pillow, opencv-python, tensorflow (for TFRecord helper), tqdm, numpy, pandas, ruamel.yaml (or pyyaml)
+- Run with --help on each script for full flag details and examples:
+  ```
+  ./inference_batch --help
+  python create_custom_tfrecoreds.py --help
+  ```
+- Safety:
+  - Use --dry_run where available before performing bulk rename/delete/move operations.
+  - Keep backups or use versioned output directories to avoid accidental data loss.
+
+If you want, I can add example command snippets to the top-level README or create minimal help texts for each script.
+
+
 ## Tuto 
 
 To run on 1 image : 
