@@ -78,6 +78,7 @@ def save_predictions_and_image(img_name, img, detections, out_dir, min_score, ne
 # VIDEO processing
 
 def process_video(args):
+    counter = 0
     out_dir = Path(args.output)
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -114,7 +115,34 @@ def process_video(args):
         # keep only dets above threshold
         valid = [d for d in pred if d[5] >= args.min_score]
 
-        if valid:
+        counter += len(valid) 
+
+        if args.background :
+            print("background mode")
+            if len(valid) == 0:
+                cv2.imshow("EfficientDet Video", cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2BGR))
+                key = cv2.waitKey(0) & 0xFF
+                if key == ord('s'):
+                    print(f"Saving frame {frame_id} with class 1") 
+
+                    save_predictions_and_image(
+                        img_name=f"frame_{frame_id}.jpg",
+                        img=frame_rgb,
+                        detections=pred,
+                        out_dir=args.output,
+                        min_score=args.min_score,
+                        new_cls="1"
+                    )
+                if key == ord('p'):
+                    continue
+                if key == ord('b'):
+                    print("Exit.")
+                    break
+            frame_id += 1
+            continue
+
+        if valid and not args.background:
+            print("valid mode ")
             print(f"Frame {frame_id}: {len(valid)} detections above threshold")
             annotated = driver.visualize(
                 frame_rgb,
@@ -147,12 +175,13 @@ def process_video(args):
             print("Next")
 
 
-
+        print(f"Processed frame {frame_id}")
         frame_id += 1
 
     cap.release()
     cv2.destroyAllWindows()
     print("✔ Video processing done.")
+    print(f"Total detections above threshold: {counter}")
 
 
 # IMAGE processing (batch)
@@ -227,6 +256,7 @@ if __name__ == "__main__":
     p.add_argument("--max_boxes", type=int, default=200)
     p.add_argument("--line_thickness", type=int, default=2)
     p.add_argument("--display", action="store_true")
+    p.add_argument("--background", action="store_true")
     args = p.parse_args()
 
     if args.video:
